@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { MapPin, Navigation } from "react-feather";
+import { MapPin, Navigation, Star } from "react-feather";
+import { useLocalStorageHook } from "../utils/favorite-hook";
 import {
   Flex,
   Heading,
@@ -68,6 +69,8 @@ const randomColor = (start = 200, end = 250) =>
   `hsl(${start + end * Math.random()}, 80%, 90%)`;
 
 function Header({ launchPad }) {
+  const { toggleFavoriteHook, isFavoriteHook } = useLocalStorageHook();
+
   return (
     <Flex
       background={`linear-gradient(${randomColor()}, ${randomColor()})`}
@@ -105,6 +108,12 @@ function Header({ launchPad }) {
             Retired
           </Badge>
         )}
+        <Box
+          fill={isFavoriteHook(launchPad) && "teal.500"}
+          color={isFavoriteHook(launchPad) && "teal.500"}
+          onClick={() => toggleFavoriteHook(launchPad, "launchPad")}
+          as={Star}
+        ></Box>
       </Stack>
     </Flex>
   );
