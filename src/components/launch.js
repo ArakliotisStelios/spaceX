@@ -22,9 +22,10 @@ import {
 } from "@chakra-ui/core";
 
 import { useSpaceX } from "../utils/use-space-x";
-import { formatDateTime } from "../utils/format-date";
+import {formatDateTime, formatDateTimeLaunchTime} from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
+import Tooltip from "@chakra-ui/core/dist/Tooltip";
 
 export default function Launch() {
   let { launchId } = useParams();
@@ -124,7 +125,9 @@ function TimeAndLocation({ launch }) {
           </Box>
         </StatLabel>
         <StatNumber fontSize={["md", "xl"]}>
-          {formatDateTime(launch.launch_date_local)}
+          <Tooltip label={formatDateTime(launch.launch_date_local)} aria-label="A tooltip">
+            {formatDateTimeLaunchTime(launch.launch_date_local)}
+          </Tooltip>
         </StatNumber>
         <StatHelpText>{timeAgo(launch.launch_date_utc)}</StatHelpText>
       </Stat>
