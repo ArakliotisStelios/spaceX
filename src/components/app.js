@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { Flex, Text } from "@chakra-ui/core";
 
 import Launches from "./launches";
@@ -10,26 +10,54 @@ import LaunchPad from "./launch-pad";
 import DrawerFavorites from "./drawer-favorites";
 import { FavoriteProvider } from "./context";
 import { getFavorites } from "../utils/local-storage-util";
+import { oktaAuthConfig } from "../auth/config";
+import {
+  Security,
+  SecureRoute,
+  LoginCallback,
+  useOktaAuth,
+} from "@okta/okta-react";
+import { OktaAuth } from "@okta/okta-auth-js";
+
+const oktaAuth = new OktaAuth(oktaAuthConfig);
 
 export default function App() {
+  const history = useHistory();
+
+  const customAuthHandler = () => {
+    history.push("/login");
+  };
   const [favorites, setFavorites] = useState(getFavorites());
+
   return (
     <FavoriteProvider value={[favorites, setFavorites]}>
       <div>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/launches" element={<Launches />} />
-          <Route path="/launches/:launchId" element={<Launch />} />
-          <Route path="/launch-pads" element={<LaunchPads />} />
-          <Route path="/launch-pads/:launchPadId" element={<LaunchPad />} />
-        </Routes>
+        <Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler}>
+          <NavBar />
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <SecureRoute path="/launches" exact component={Launches} />
+            <SecureRoute path="/launches/:launchId" component={Launch} />
+            <SecureRoute path="/launch-pads" exact component={LaunchPads} />
+            <SecureRoute
+              path="/launch-pads/:launchPadId"
+              component={LaunchPad}
+            />
+            <Route path="/login/callback" component={LoginCallback} />
+          </Switch>
+        </Security>
       </div>
     </FavoriteProvider>
   );
 }
 
 function NavBar() {
+  const { oktaAuth, authState } = useOktaAuth();
+
+  if (authState.isPending) return null;
+
+  const logout = async () => oktaAuth.signOut();
+
   return (
     <Flex
       as="nav"
@@ -48,7 +76,12 @@ function NavBar() {
       >
         ¡SPACE·R0CKETS!
       </Text>
-      <DrawerFavorites />
+      {authState.isAuthenticated && (
+        <>
+          <DrawerFavorites />
+          <button onClick={logout}>Logout</button>
+        </>
+      )}
     </Flex>
   );
 }

@@ -48,7 +48,7 @@ export default function LaunchPad() {
       <Breadcrumbs
         items={[
           { label: "Home", to: "/" },
-          { label: "Launch Pads", to: ".." },
+          { label: "Launch Pads", to: "/launch-pads" },
           { label: launchPad.name },
         ]}
       />
@@ -113,7 +113,7 @@ function Header({ launchPad }) {
           color={isFavoriteHook(launchPad) && "teal.500"}
           onClick={() => toggleFavoriteHook(launchPad, "launchPad")}
           as={Star}
-        ></Box>
+        />
       </Stack>
     </Flex>
   );
