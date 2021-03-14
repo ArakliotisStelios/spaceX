@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import { format as timeAgo } from "timeago.js";
-import { Watch, MapPin, Navigation, Layers } from "react-feather";
+import { Watch, MapPin, Navigation, Layers, Star } from "react-feather";
 import {
   Flex,
   Heading,
@@ -22,10 +22,11 @@ import {
 } from "@chakra-ui/core";
 
 import { useSpaceX } from "../utils/use-space-x";
-import {formatDateTime, formatDateTimeLaunchTime} from "../utils/format-date";
+import { formatDateTime, formatDateTimeLaunchTime } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import Tooltip from "@chakra-ui/core/dist/Tooltip";
+import { useLocalStorageHook } from "../utils/favorite-hook";
 
 export default function Launch() {
   let { launchId } = useParams();
@@ -64,6 +65,8 @@ export default function Launch() {
 }
 
 function Header({ launch }) {
+  const { toggleFavoriteHook, isFavoriteHook } = useLocalStorageHook();
+
   return (
     <Flex
       bgImage={`url(${launch.links.flickr_images[0]})`}
@@ -109,6 +112,12 @@ function Header({ launch }) {
             Failed
           </Badge>
         )}
+        <Box
+          fill={isFavoriteHook(launch) ? "teal.500" : null}
+          color={isFavoriteHook(launch) ? "teal.500" : null}
+          as={Star}
+          onClick={() => toggleFavoriteHook(launch, "launch")}
+        ></Box>
       </Stack>
     </Flex>
   );
@@ -125,7 +134,10 @@ function TimeAndLocation({ launch }) {
           </Box>
         </StatLabel>
         <StatNumber fontSize={["md", "xl"]}>
-          <Tooltip label={formatDateTime(launch.launch_date_local)} aria-label="A tooltip">
+          <Tooltip
+            label={formatDateTime(launch.launch_date_local)}
+            aria-label="A tooltip"
+          >
             {formatDateTimeLaunchTime(launch.launch_date_local)}
           </Tooltip>
         </StatNumber>
