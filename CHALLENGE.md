@@ -1,8 +1,4 @@
-# The Pleo Frontend Challenge
-
-Here at Pleo we love space. For example, we name all our microservices after
-moons of the solar system. But before you get to the moons, you have to go
-through rockets. Welcome to our frontend challenge!
+ Welcome to our frontend challenge!
 
 We've built a simple web app that displays information about rocket launches,
 fetched from the unofficial SpaceX API V3 at
